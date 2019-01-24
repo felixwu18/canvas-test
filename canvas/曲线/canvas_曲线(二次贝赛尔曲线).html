@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>canvas 曲线(二次贝塞尔曲线)</title>
+</head>
+
+<body>
+    <canvas id="canvas">你的浏览器太low了, 不支持canvas，其他浏览器试一试</canvas>
+    <script>
+        /* 概念:
+                * 贝塞尔曲线: 通过一个方程来描述一条曲线 
+                * 分类: 根据方程的最高阶数，又分为
+                *         - 线性贝赛尔曲线，
+                *         - 二次贝塞尔曲线、(用的较多)
+                *         - 三次贝塞尔曲线和 (用的较多)
+                *         - 更高阶的贝塞尔曲线
+                * 
+                * requestAnimationFrame (HTML5新增的定时器) : 由浏览器专门为动画提供的API, 采用系统时间间隔 ，保持最佳绘制效率,
+                *          不会因为间隔时间过短，造成过度绘制，增加开销；
+                *          也不会因为间隔时间太长，使用动画卡顿不流畅，
+                *          让各种网页动画效果能够有一个统一的刷新机制，从而节省系统资源，提高系统性能，改善视觉效果
+               */
+        // 二次贝塞尔曲线 &&  三次贝塞尔曲线
+
+        /* 二次贝塞尔曲线, 由三个控制点P0,P1,P2来确定, 
+         * 三次贝塞尔曲线需要四个控制点P0,P1,P2,P3来确定
+         * 曲线的方程式可百度
+         * 
+         * 贝塞尔曲线有几个重要的特征：
+            - n阶贝塞尔曲线需要n+1个点来确定
+            - 贝塞尔曲线是平滑的
+            - 贝塞尔曲线的起点和终点与对应控制点的连线相切
+        
+        */
+
+        // 绘制贝塞尔曲线
+
+        // 搭画布环境
+        var canvas = document.getElementById('canvas');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var ctx = canvas.getContext('2d');
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#000';
+
+        /**
+ * 绘制一条曲线路径
+    * @param  {CanvasRenderingContext2D} ctx
+    * @param  {Array<number>}            start 起点
+    * @param  {Array<number>}            end 终点
+    * @param  {number}                   curveness 曲度(0-1)
+  */
+        // drawCurvePath(
+        //     ctx,
+        //     [10, 100],
+        //     [300, 300],
+        //     0.4
+        // );
+
+        // ctx.stroke();
+
+        // function drawCurvePath(ctx, start, end, curveness) {
+        //     // 计算中间控制点
+        //     var cp = [
+        //         (start[0] + end[0]) / 2 - (start[1] - end[1]) * curveness,
+        //         (start[1] + end[1]) / 2 - (end[0] - start[0]) * curveness
+        //     ];
+        //     ctx.moveTo(start[0], start[1]);
+        //     ctx.quadraticCurveTo(
+        //         cp[0], cp[1],
+        //         end[0], end[1]
+        //     );
+        // }
+        // 总结: canvas提供的 quadraticCurveTo 方法只能绘制一条完整的二次贝赛尔曲线，没有办法去控制它只画一部分
+
+
+        // 会动的曲线：
+        // 方法一: 不再用canvas提供的quadraticCurveTo来绘制曲线, 而是通过贝赛尔曲线的方程计算出一系列点，用多端直线来模拟曲线
+        /**
+        * 绘制一条曲线路径
+        * @param  {Object}        ctx canvas渲染上下文
+        * @param  {Array<number>} start 起点
+        * @param  {Array<number>} end 终点
+        * @param  {number}        curveness 曲度(0-1)
+        * @param  {number}        percent 绘制百分比(0-100)
+        */
+
+        // var percent = 0;
+
+        // function animate() {
+
+        //     ctx.clearRect(0, 0, 800, 800);
+        //     ctx.beginPath();
+
+        //     drawCurvePath(
+        //         ctx,
+        //         [10, 100],
+        //         [300, 300],
+        //         0.3,
+        //         percent
+        //     );
+
+        //     ctx.stroke();
+
+        //     percent = (percent + 1) % 100; // 递增percent
+
+        //     requestAnimationFrame(animate);  // 为了动画更加平滑，我们使用requestAnimationFrame来代替定时器
+
+        // }
+
+        // // 每隔一段时间调用一次这个方法，并且递增percent
+        // animate();
+
+        // function drawCurvePath(ctx, start, end, curveness, percent) {
+
+        //     var cp = [
+        //         (start[0] + end[0]) / 2 - (start[1] - end[1]) * curveness,
+        //         (start[1] + end[1]) / 2 - (end[0] - start[0]) * curveness
+        //     ];
+
+        //     ctx.moveTo(start[0], start[1]);
+
+        //     for (var t = 0; t <= percent / 100; t += 0.01) {
+
+        //         var x = quadraticBezier(start[0], cp[0], end[0], t);
+        //         var y = quadraticBezier(start[1], cp[1], end[1], t);
+
+        //         ctx.lineTo(x, y);
+        //     }
+
+        // }
+
+        // function quadraticBezier(p0, p1, p2, t) {
+        //     var k = 1 - t;
+        //     return k * k * p0 + 2 * (1 - t) * t * p1 + t * t * p2;    // 这个方程就是二次贝赛尔曲线方程
+        // }
+        //  总结： 用这样的方式绘制曲线，绘制一条曲线时可能感觉不到区别，绘制上千条曲线，性能就会受到很大的影响
+
+
+        // 方法二：  我们只需要每次计算出Q0，B，就能得到其中一小段贝赛尔曲线的控制点，然后就可以通过quadraticCurveTo来绘制它了。
+                /*
+        * 更换 drawCurvePath()方法 如下：
+                        * @param  {Object}        ctx canvas渲染上下文
+                        * @param  {Array<number>} start 起点
+                        * @param  {Array<number>} end 终点
+                        * @param  {number}        curveness 曲度(0-1)
+                        * @param  {number}        percent 绘制百分比(0-100)
+        */
+        
+        var percent = 0;
+
+        function animate() {
+
+            ctx.clearRect(0, 0, 800, 800);
+            ctx.beginPath();
+
+            drawCurvePath(
+                ctx,
+                [10, 100],
+                [300, 300],
+                0.3,
+                percent
+            );
+
+            ctx.stroke();
+
+            percent = (percent + 1) % 100; // 递增percent
+
+            requestAnimationFrame(animate);  // 为了动画更加平滑，我们使用 requestAnimationFrame (HTML5新增的定时器) 来代替定时器 
+
+        }
+
+        // 每隔一段时间调用一次这个方法，并且递增percent
+        animate();
+
+
+        function drawCurvePath(ctx, start, end, curveness, percent) {
+            var cp = [
+                (start[0] + end[0]) / 2 - (start[1] - end[1]) * curveness,
+                (start[1] + end[1]) / 2 - (end[0] - start[0]) * curveness
+            ];
+
+            var t = percent / 100;
+
+            var p0 = start;
+            var p1 = cp;
+            var p2 = end;
+
+            var v01 = [p1[0] - p0[0], p1[1] - p0[1]];     // 向量<p0, p1>
+            var v12 = [p2[0] - p1[0], p2[1] - p1[1]];     // 向量<p1, p2>
+
+            var q0 = [p0[0] + v01[0] * t, p0[1] + v01[1] * t];
+            var q1 = [p1[0] + v12[0] * t, p1[1] + v12[1] * t];
+
+            var v = [q1[0] - q0[0], q1[1] - q0[1]];       // 向量<q0, q1>
+
+            var b = [q0[0] + v[0] * t, q0[1] + v[1] * t];
+
+            ctx.moveTo(p0[0], p0[1]);
+
+            ctx.quadraticCurveTo(
+                q0[0], q0[1],
+                b[0], b[1]
+            );
+
+        }
+
+
+    </script>
+</body>
+
+</html>

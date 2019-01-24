@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Canvas</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+    <!-- <video id='video' src="TaiChi.mp4" controls muted="true"></video> -->
+  <canvas class="myCanvas">
+    <p>Add suitable fallback here.</p>
+  </canvas>
+  <!-- <canvas id="canvas" width="300" height="300"></canvas> -->
+  <script>
+    /*
+     createPattern()	在指定的方向上重复指定的元素
+    */
+    var video = document.getElementById('video');
+    // // 第一部分: 画图片 drawImag()
+    var canvas = document.querySelector('.myCanvas');
+    var width = canvas.width = window.innerWidth;
+    var height = canvas.height = window.innerHeight;
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ccc';
+    ctx.fillRect(0, 0, width, height);
+
+    // drawImage() method
+    var image = new Image();
+    // image.src='https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1547052830880&di=d63f402a606f9544e82b26b1631dd8bf&imgtype=0&src=http%3A%2F%2Fpic31.nipic.com%2F20130630%2F7447430_172128926000_2.jpg';
+    image.src = 'bgImg.png';
+    image.onload = function () {
+      // 传入绘制对象后, 先定位, 再确定大小
+      ctx.drawImage(image, 200, 80, 300, 300); //使用drawImage() 来嵌入图像，但是我们需要确保图像文件已经被加载
+    }
+    // //如果想显示图片 的一部分
+    // ctx.drawImage(image, 20, 20, 185, 175, 50, 50, 185, 175);
+ 
+    // 第二部分: 图片背景填充 createPattern() (填充对象可为,image,canvas,video ?)  
+    // var canvas = document.getElementById('canvas');
+    // var ctx = canvas.getContext('2d');
+    // ctx.fillStyle = '#ccc';
+    // document.body.style.background = '#ccc'  // 大背景灰色
+    // var img = new Image();
+    // // img.src = 'https://mdn.mozillademos.org/files/222/Canvas_createpattern.png';
+    // img.src = 'bgImg.png';
+    // console.log('img')
+    // img.onload = function () {
+    //   var pattern = ctx.createPattern(img, 'repeat');
+    //   ctx.fillStyle = pattern;
+    //   ctx.fillRect(0, 0, 300, 300);
+    // };
+
+  </script>
+</body>
+
+</html>

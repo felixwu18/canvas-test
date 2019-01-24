@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>canvas 曲线(椭圆)</title>
+</head>
+
+<body>
+    <canvas id="canvas">你的浏览器太low了, 不支持canvas，其他浏览器试一试</canvas>
+    <script type="text/javascript">
+        /* 
+        *  开始位置为原点的正左边的端点，最后原点我们以一个黑色且半径为10的小球表示
+        */
+        // 第一步: 获得画布对象,搭建环境
+        var a = 200,
+            b = 100,
+            radius = 30;
+        time = 0; //循环的次数
+        window.onload = function () {
+            var canvas = document.getElementById('canvas');
+            canvas.height = 768;
+            canvas.width = 1024;
+            var context = canvas.getContext('2d');
+            centerPoint(context);
+            arcRoute(context, 300, 300, a, b, radius);
+            setInterval(function () {
+                arcRoute(context, 300, 300, a, b, radius);
+            }, 700);
+        };
+
+        //绘制原点
+        function centerPoint(context) {
+            context.fillStyle = "black";
+            context.beginPath();
+            context.arc(300, 300, 10, 0, 2 * Math.PI, true)
+            context.closePath();
+            context.fill();
+        }
+        //椭圆路线绘制
+        function route(context, x, y, a, b) {
+            var step = (a > b) ? 1 / a : 1 / b;
+            context.beginPath();
+            context.moveTo(x + a, y); //从椭圆的左端点开始绘制
+            for (var i = 0; i < 2 * Math.PI; i += step) {
+                context.lineTo(x + a * Math.cos(i), y + b * Math.sin(i));
+            }
+            context.closePath();
+            context.stroke();
+        }
+
+        //椭圆上小球运动的实现
+        function arcRoute(context, x, y, a, b, r) {
+            context.clearRect(0, 0, 1024, 768);
+            route(context, x, x, a, b);
+            centerPoint(context);
+            var step = (a > b) ? 1 / a : 1 / b;
+            context.fillStyle = "red";
+            if (time == 0) {
+                context.beginPath();
+                context.arc(x, y, r, 0, 2 * Math.PI, true);
+                context.closePath();
+                context.fill();
+            } else {
+                context.beginPath();
+                context.arc(x + a * Math.cos(time), y + b * Math.sin(time), r, 0, 2 * Math.PI, true);
+                context.closePath();
+                context.fill();
+            }
+            time += 1;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>canvas 曲线(圆)</title>
+</head>
+
+<body>
+    <canvas id="canvas">你的浏览器太low了, 不支持canvas，其他浏览器试一试</canvas>
+    <script type="text/javascript">
+        /* 
+        *  实现圆周运动
+        *  旋转或矩阵 来实现
+        *  单位: 无需加, 默认px
+        *  translate(), rotate(), scale()(实质:缩放坐标矩阵,缩放用的较少) 均属坐标变换
+        *  save() 将当前以左上角坐标为(0,0)的上下文环境进行保存，这样是为了在接下来中要进行画布偏移后，可以进行还原当前的环境
+        *  restore(); 将变换后的当前的坐标顶点(500,400)还原为（0,0）,其实在save中就是将上下文环境保存到栈中，在restore下面对其进行还原
+        *  画布偏移后, 在没有重绘时,对已绘制元素没影响, 但重绘元素时有影响(坐标变化, 擦掉之前内容, 重新定位绘制)
+        */
+        // 第一步: 获得画布对象,搭建环境
+        var canvas = document.getElementById('canvas');
+        canvas.height = 728;
+        canvas.width = 1024;
+        var context = canvas.getContext('2d');
+        // 第二步 实现初始化(其实滚动的圆球可不初始化,后面立即会定时绘制)
+        drawNotChange(context); // 此处不初始化, 初始化闪动, 过渡不平滑
+        context.beginPath();
+        context.arc(500, 550, 30, 0, 2 * Math.PI, true);
+        context.closePath();
+        // 第三步 填充或绘制,呈现画面
+        context.fillStyle = 'blue';
+        context.fill();
+        // 第四步 实现动画
+        setInterval(function () {
+            run(context);
+        }, 16);
+
+        var time = 0; //定义运动的执行次数
+        function run(cxt) {
+            cxt.clearRect(0, 0, 1024, 728);  // 每次要将之前的画布环境清除
+            drawNotChange(cxt); // 每次都要将不动状态的对象再原样绘制一次
+
+            cxt.save(); //将当前以左上角坐标为(0,0)的上下文环境进行保存，这样是为了在接下来中要进行画布偏移后，可以进行还原当前的环境
+            cxt.translate(500, 400); // 将坐标移动到(500, 400) 中心圆的中心点
+            cxt.rotate(time * 2 * Math.PI / 180); //旋转坐标轴, 设定每次旋转的度数 每次转2度
+            
+            // 在变换的坐标矩阵中绘制滚动圆的新位置 (重要: 曲线 先变换坐标(save(),restore()辅助), 再绘制图形)
+            cxt.beginPath();
+            cxt.arc(0, 150, 30, 0, 2 * Math.PI, false);  // 取特殊点为滚动圆的中心坐标(0, 150) y轴与轨迹圆的交点
+            cxt.closePath();
+
+            cxt.fillStyle = 'blue';
+            cxt.fill();
+            cxt.restore(); //将当前为(500,400)的点还原为（0,0）,其实在save中就是将上下文环境保存到栈中，在restore下面对其进行还原
+
+            time += 1; 
+        }
+
+        //绘制不变因素
+        function drawNotChange(context) {
+            // 中心圆
+            context.beginPath();
+            context.arc(500, 400, 30, 0, 2 * Math.PI, true);
+            context.closePath();
+
+            context.fillStyle = 'red';
+            context.fill(); // 填充中心圆
+
+            // 外部轨迹圆
+            context.beginPath();
+            context.arc(500, 400, 150, 0, 2 * Math.PI, true);
+            context.closePath();
+
+            context.stroke(); // 绘制轨迹
+        }
+    </script>
+</body>
+
+</html>

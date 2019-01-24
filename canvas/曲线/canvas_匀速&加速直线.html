@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>画布动画_匀速直线(有卡顿, 取16ms更新稍好)</title>
+</head>
+
+<body>
+    <canvas id="canvas">你的浏览器太low了, 不支持canvas，其他浏览器试一试</canvas>
+    <script type="text/javascript">
+        /* 
+        *  方法一:
+        */
+        // 第一步: 第一步: 获得画布对象,搭建环境
+        var canvas = document.getElementById('canvas');
+        canvas.height = 728;
+        canvas.width = 1024;
+        var context = canvas.getContext('2d');
+        // 第二步 描图路径
+        context.beginPath();
+        context.arc(800, 300, 30, 0, 2 * Math.PI, true);
+        context.closePath();
+        // 第三步 填充或绘制,呈现画面
+        context.fillStyle = 'red';
+        context.fill();
+        // 第四步 实现动画
+        setInterval(function () {
+            run(context);
+        }, 16);
+
+        // var speed = 0;
+        // var startPoint = 800; // 横坐标位置
+        // function run(cxt) {
+        //     speed = -3;
+        //     cxt.clearRect(0, 0, 1024, 728);  // 每次都要清除之前的画布环境, 再重绘一个新的
+        //     //cxt.top+=speed;  
+        //     if (startPoint <= 0) {
+        //         startPoint = 800;  // 返回原地从新开始
+        //     } else {
+        //         startPoint += speed;  // 每次减少7, 左移动
+        //     }
+        //     // 重绘
+        //     cxt.beginPath();  // 此处重要, 不加就会将之前重绘保留(可实现不同效果)
+        //     cxt.arc(startPoint, 300, 30, 0, 2 * Math.PI, true);
+        //     cxt.closePath();
+        //     cxt.fill();
+        // }
+        /* 
+        *  方法二(实现加速效果):
+        */
+        var v0 = 0;//初始速度
+        var a = 0;//加速度
+        var v = 0;//变化的速度
+        var time = 0;//时间
+        var x = 0;//位移量
+        var startPoint = 800;//起始点
+        // V=V0+at
+        // x=v0t+1/2at^2 (此处初始速度V0为 0)
+        // v^2-V^2=2ax
+        function run(cxt) {
+            cxt.clearRect(0, 0, 1024, 728);    
+
+            cxt.beginPath();            
+            time += 0.05;
+            a = 10;
+            x = -(0.5 * a * (time ** 2)); //位移公式代入 (**为幂指数)
+            startPoint += x;
+            cxt.arc(startPoint, 300, 30, 0, 2 * Math.PI, true);
+            cxt.closePath();
+            
+            cxt.fill();
+        }
+    </script>
+</body>
+</html>

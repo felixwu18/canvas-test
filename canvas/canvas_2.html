@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Canvas_2</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <img src="bgImg.png" id="img">
+  <canvas class="myCanvas">
+    <p>Add suitable fallback here.</p>
+  </canvas>
+
+  <script>
+    // 第一步: 获得画布对象,配置环境
+
+    var canvas = document.querySelector('.myCanvas'); // 得到画布引用
+    // 使之铺满窗口（默认300*150px)
+    var width = canvas.width = window.innerWidth;
+    var height = canvas.height = window.innerHeight;
+    // 得到绘画的上下文对象
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ccc'; // 填充整个上下文的背景色 (灰)
+    console.log(ctx.fillStyle);
+    ctx.fillRect(0, 0, width, height); // 填充一个正方形
+    // ctx.strokeRect(0,0,width-100,height-100);
+
+
+
+    // 第二步: 开始造路径  三角形
+    ctx.beginPath();  // 开始一条新的路径 
+    ctx.moveTo(50, 50); //do nothing, just jump to new position (之后就可以用lineTo 直线路径连接两点， 但还看不到任何绘制)
+    //绘制线(角度度数转幅度数)
+    function degToRad(degrees) {
+      return degrees * Math.PI / 180;
+    }
+    ctx.lineTo(150, 50);
+    var triHeight = 50 * Math.tan(degToRad(60));  // 点的纵坐标计算
+    ctx.lineTo(100, 50 + triHeight);
+    ctx.lineTo(50, 50);
+    ctx.closePath() // 直接合闭路径 (让起点和终点 连接封闭)
+
+
+
+    // 第三步: 填充或绘制路径(呈现在画布上)
+    ctx.strokeStyle = 'red';  // 绘制显色
+    ctx.lineWidth = 5;  // 绘制的线宽
+    ctx.fillStyle = 'lightblue'; // 确定填充颜色
+    ctx.stroke() // 绘制路径 (线段)
+    ctx.fill();
+
+
+
+
+
+    //第二步: 开始造路径   画圆
+    ctx.beginPath(); // 开始一条新的路径 
+    ctx.arc(260, 106, 50, degToRad(0), degToRad(360), false);
+
+    // 第三步: 填充或绘制路径(呈现在画布上)
+    var image = new Image();
+    image.src = 'https://mdn.mozillademos.org/files/222/Canvas_createpattern.png';
+    console.log(image)
+    image.onload = function () {
+      var pattern = ctx.createPattern(image, 'repeat');   // createPattern() 将image用做图案, 并确定为填充样式
+      console.log(pattern, ctx)
+      ctx.fillStyle = pattern;
+      ctx.fill();  // 填充路径 (填充线段的闭合区域
+    }
+    ctx.strokeStyle = 'yellowgreen';
+    ctx.fillStyle = 'rgb(0, 0, 255)'; // 深蓝
+    ctx.fill();
+    ctx.stroke() // 绘制路径 (曲线)
+
+      //另外一个圆
+      //第二步
+      ctx.beginPath(); // 开始一条新的路径 
+      ctx.arc(500, 200, 50, degToRad(-45), degToRad(45), true);
+      ctx.lineTo(350,120);
+      // ctx.closePath()
+
+    //  第三步
+      // ctx.fillStyle='yellow';
+      ctx.fill();
+      ctx.stroke() // 绘制路径 (曲线)
+
+
+
+// // 将画布中的内容抽取成一张图片,  然后追加到文档后面 
+//     var img = document.createElement('img');
+//     img.src = canvas.toDataURL();  // 将画布转换成图片
+//     document.body.appendChild(img)
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Canvas</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas class="myCanvas">
+    <p>Add suitable fallback here.</p>
+  </canvas>
+
+  <script>
+    // 第一步: 获得画布对象,配置环境
+    var canvas = document.querySelector('.myCanvas');
+    var width = canvas.width = window.innerWidth;
+    var height = canvas.height = window.innerHeight;
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000';  // 
+    ctx.fillRect(0, 0, width, height);
+
+    // 第二步: 开始造路径 画文本(描边 和 填充)
+    //       fillText() — draws filled text.
+    // strokeText() — draws outline (stroke) text.
+
+    // 描边字体1
+    ctx.strokeStyle = 'blue';
+    ctx.lineWidth = 2; // 描边的线粗
+    ctx.font = 'bold 50px arial';   // 字体设置(粗细, 大小, 类型, 有无衬线)
+    ctx.strokeText('Canvas text', 50, 50);  // 勾出文本,  后面参数是画布左上顶点为原点的坐标系坐标
+
+    // 描边字体2
+    ctx.lineWidth = 1;
+    ctx.font = '50px arial';
+    ctx.textAlign = 'left';
+    ctx.strokeText('Canvas text', 50, 100);
+
+    //填充字体_1
+    // ctx.fillStyle = 'red';
+    // ctx.font = 'bold 50px georgia';
+    // ctx.fillText('Canvas text', 50, 200); // 填充文本,  后面是左上的距离
+    
+    // 填充字体可使用图片_2
+    var img = new Image();
+    img.src = 'https://mdn.mozillademos.org/files/222/Canvas_createpattern.png';
+    console.log('img')
+    img.onload = function () {
+      var pattern = ctx.createPattern(img, 'repeat');
+      ctx.fillStyle = pattern;
+      ctx.font = 'bold 50px georgia';
+      ctx.fillText('Canvas text', 50, 200); // 填充文本,  后面是左上的距离
+    };
+
+
+  </script>
+</body>
+
+</html>
